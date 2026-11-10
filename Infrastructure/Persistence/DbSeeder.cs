@@ -19,6 +19,12 @@ public static class DbSeeder
 
         await db.Database.MigrateAsync();
 
+        if (string.IsNullOrWhiteSpace(seed.AdminPassword))
+        {
+            logger.LogInformation("Seed de administrador ignorado. Configure Seed:AdminPassword para criar o administrador inicial.");
+            return;
+        }
+
         var email = Email.Create(seed.AdminEmail);
         var exists = await db.Users.AnyAsync(x => x.Email.Value == email.Value);
         if (exists)
