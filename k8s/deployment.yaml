@@ -1,0 +1,83 @@
+{
+  "apiVersion": "apps/v1",
+  "metadata": {
+    "name": "users-api",
+    "namespace": "fcg"
+  },
+  "spec": {
+    "template": {
+      "spec": {
+        "containers": [
+          {
+            "readinessProbe": {
+              "periodSeconds": 5,
+              "httpGet": {
+                "port": 8080,
+                "path": "/health"
+              },
+              "timeoutSeconds": 3
+            },
+            "ports": [
+              {
+                "containerPort": 8080
+              }
+            ],
+            "resources": {
+              "limits": {
+                "memory": "512Mi",
+                "cpu": "500m"
+              },
+              "requests": {
+                "memory": "128Mi",
+                "cpu": "100m"
+              }
+            },
+            "livenessProbe": {
+              "periodSeconds": 15,
+              "httpGet": {
+                "port": 8080,
+                "path": "/health"
+              },
+              "failureThreshold": 3
+            },
+            "image": "fcg-users:local",
+            "startupProbe": {
+              "periodSeconds": 5,
+              "httpGet": {
+                "port": 8080,
+                "path": "/health"
+              },
+              "failureThreshold": 60
+            },
+            "imagePullPolicy": "Never",
+            "name": "users-api",
+            "envFrom": [
+              {
+                "configMapRef": {
+                  "name": "users-api-config"
+                }
+              },
+              {
+                "secretRef": {
+                  "name": "users-api-secrets"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "metadata": {
+        "labels": {
+          "app": "users-api"
+        }
+      }
+    },
+    "selector": {
+      "matchLabels": {
+        "app": "users-api"
+      }
+    },
+    "replicas": 1
+  },
+  "kind": "Deployment"
+}
