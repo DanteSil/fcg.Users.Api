@@ -11,17 +11,20 @@ public class AuthService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly IUserCreatedPublisher _userCreatedPublisher;
 
     public AuthService(
         IUserRepository users,
         IUnitOfWork unitOfWork,
         IPasswordHasher passwordHasher,
-        IJwtTokenService jwtTokenService)
+        IJwtTokenService jwtTokenService,
+        IUserCreatedPublisher userCreatedPublisher)
     {
         _users = users;
         _unitOfWork = unitOfWork;
         _passwordHasher = passwordHasher;
         _jwtTokenService = jwtTokenService;
+        _userCreatedPublisher = userCreatedPublisher;
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterUserRequest request, CancellationToken cancellationToken = default)
@@ -35,6 +38,7 @@ public class AuthService
         var user = User.Register(request.Name, email, _passwordHasher.Hash(request.Password));
         await _users.AddAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _userCreatedPublisher.PublishAsync(new UserCreatedEvent(user.Id, email.Value, user.Name));
 
         return new AuthResponse(_jwtTokenService.GenerateToken(user), user.ToDto());
     }

@@ -6,6 +6,7 @@
     <UserSecretsId>9bce3f3a-1269-4e42-97bb-83e83b398dcd</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="9.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />

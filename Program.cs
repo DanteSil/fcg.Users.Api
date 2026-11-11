@@ -6,6 +6,8 @@ using Fcg.UsersAPI;
 using Fcg.UsersAPI.Extensions;
 using Fcg.UsersAPI.Middleware;
 using Fcg.Application;
+using Fcg.Application.Users;
+using Fcg.Infrastructure.Messaging;
 using Fcg.Infrastructure;
 using Fcg.Infrastructure.Persistence;
 
@@ -62,6 +64,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddApplication();
+builder.Services.AddSingleton<IUserCreatedPublisher, RabbitMqUserCreatedPublisher>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApiAuthenticationResponses();
 
